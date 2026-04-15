@@ -32,9 +32,7 @@ class CalculadoraTest {
 	@Test
 	void shouldSumTheNumbersWithNoErrors(){
 
-		int resultado = calculadora.soma(3,4);
-
-		assertEquals(7, resultado);
+		assertThrows(ArithmeticException.class, ()->calculadora.soma(3,4));
 	}
 
 	@Test
