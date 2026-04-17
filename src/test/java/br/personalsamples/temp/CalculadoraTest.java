@@ -12,6 +12,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class CalculadoraTest {
 
@@ -31,7 +32,7 @@ class CalculadoraTest {
 
 	@Test
 	void shouldSumTheNumbersWithNoErrors(){
-
+		Assertions.assertDoesNotThrow(()->calculadora.soma(1,1));
 		int resultado = calculadora.soma(3,4);
 
 		assertEquals(7, resultado);
@@ -39,7 +40,7 @@ class CalculadoraTest {
 
 	@Test
 	 void shouldThrowAnErrorWhenANumberIsDividedByZero(){
-		ArithmeticException exception =  Assertions.assertThrows(ArithmeticException.class,
+		ArithmeticException exception =  assertThrows(ArithmeticException.class,
 				()-> calculadora.divisao(50,0));
 		assertTrue(exception.getMessage().contains("by zero"));
 	}
