@@ -2,9 +2,7 @@ package br.personalsamples.operacoes;
 
 import br.personalsamples.dominio.Conta;
 import br.personalsamples.dominio.Operacao;
-import br.personalsamples.dominio.StatusConta;
 import br.personalsamples.excecoes.ContaInvalidaException;
-import br.personalsamples.excecoes.SaldoInvalidoException;
 import br.personalsamples.servico.ContaService;
 import br.personalsamples.servico.MovimentacoesService;
 import br.personalsamples.validadores.SaldoInsuficienteException;
@@ -14,9 +12,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentMatchers;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 
@@ -24,7 +20,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
-//@ExtendWith(MockitoExtension)
+
+@ExtendWith(MockitoExtension.class)
 class OperacoesSimplesTest {
 
 	private OperacoesSimples operacoesSimples;
@@ -36,7 +33,7 @@ class OperacoesSimplesTest {
 		contaService = mock(ContaService.class);
 		movimentacoesService = mock(MovimentacoesService.class);
 		operacoesSimples = new OperacoesSimples(contaService, movimentacoesService);
-		when(contaService.isValidAccount(ArgumentMatchers.any(Conta.class)))
+		lenient().when(contaService.isValidAccount(ArgumentMatchers.any(Conta.class)))
 				.thenReturn(true);
 	}
 
@@ -71,5 +68,17 @@ class OperacoesSimplesTest {
 				.thenReturn(false);
 		assertThrows(ContaInvalidaException.class,
 				()->operacoesSimples.sacar(BigDecimal.valueOf(100), conta));
+	}
+
+	@DisplayName("Should make a deposit with no errors")
+	@Test
+	void shouldMakeDepositNoErrors(){
+		Conta conta = new Conta();
+		conta.setSaldo(BigDecimal.TEN);
+		BigDecimal resultado = operacoesSimples.depositar(BigDecimal.TEN, conta);
+		assertEquals(BigDecimal.valueOf(20), resultado);
+		verify(movimentacoesService, times(1))
+				.cadastrarOperacao(conta, Operacao.DEPOSITO, BigDecimal.TEN);
+		assertEquals(BigDecimal.valueOf(20), conta.getSaldo());
 	}
 }
